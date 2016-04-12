@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * Created by Administrator on 2016-04-12.
@@ -27,6 +28,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Bean(name = "authenticationManagerBean")
   @Override public AuthenticationManager authenticationManagerBean() throws Exception {
     return super.authenticationManagerBean();
+  }
+
+  @Bean
+  @Override public UserDetailsService userDetailsServiceBean() throws Exception {
+    return super.userDetailsServiceBean();
   }
 
   @Override protected void configure(AuthenticationManagerBuilder auth) throws Exception {
