@@ -1,13 +1,16 @@
 package com.selonj.getstarted.oauth2.examples;
 
-import com.selonj.getstarted.oauth2.config.OAuth2ServerConfig;
-import com.selonj.getstarted.oauth2.supports.OAuth2AccessToken;
 import com.selonj.getstarted.oauth2.supports.ClientDriver;
+import com.selonj.getstarted.oauth2.supports.OAuth2AccessToken;
 import com.selonj.getstarted.oauth2.supports.OAuth2Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.selonj.getstarted.oauth2.config.OAuth2ServerConfig.CLIENT_ID;
+import static com.selonj.getstarted.oauth2.config.OAuth2ServerConfig.CLIENT_SECRET;
+import static com.selonj.getstarted.oauth2.config.WebSecurityConfig.PASSWORD;
+import static com.selonj.getstarted.oauth2.config.WebSecurityConfig.USERNAME;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -18,7 +21,7 @@ import static org.junit.Assert.assertThat;
 public class GetStartedOAuth2Example {
   private static final OAuth2AccessToken NO_ACCESS_TOKEN = null;
   private OAuth2Server server = new OAuth2Server();
-  private ClientDriver client = new ClientDriver(OAuth2ServerConfig.CLIENT_ID, OAuth2ServerConfig.CLIENT_SECRET, server);
+  private ClientDriver client = new ClientDriver(CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD, server);
 
   @Before
   public void startServer() throws Exception {
@@ -43,7 +46,7 @@ public class GetStartedOAuth2Example {
 
     client.fetchResource(accessToken);
 
-    client.hasResponseBodyReceived("bearer tonr");
+    client.hasResponseBodyReceived("bearer "+USERNAME);
   }
 
   @Test

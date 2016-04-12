@@ -3,6 +3,7 @@ package com.selonj.getstarted.oauth2.supports;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
@@ -13,8 +14,6 @@ import static com.selonj.getstarted.oauth2.supports.ResponseDriver.isUnauthorize
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Administrator on 2016-04-12.
@@ -23,17 +22,21 @@ public class ClientDriver {
   private HttpClient client = HttpClients.createMinimal();
   private final String clientId;
   private final String clientSecret;
+  private final String username;
+  private final String password;
   private final OAuth2Server server;
   private ResponseDriver driver;
 
-  public ClientDriver(String clientId, String clientSecret, OAuth2Server server) {
+  public ClientDriver(String clientId, String clientSecret, String username, String password, OAuth2Server server) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.username = username;
+    this.password = password;
     this.server = server;
   }
 
   public OAuth2AccessToken fetchAccessToken() throws IOException {
-    fetch(format("/oauth/token?client_id=%s&client_secret=%s&grant_type=client_credentials", clientId, clientSecret));
+    fetch(format("/oauth/token?client_id=%s&client_secret=%s&username=%s&password=%s&grant_type=password", clientId, clientSecret, username, password));
 
     driver.assertResponseStatus(isOk());
 
@@ -41,7 +44,7 @@ public class ClientDriver {
   }
 
   public OAuth2AccessToken refreshAccessToken(OAuth2AccessToken tokenToRefresh) throws IOException {
-    fetch(format("/oauth/token?client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s",clientId,clientSecret,tokenToRefresh.refreshToken()));
+    fetch(format("/oauth/token?client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s", clientId, clientSecret, tokenToRefresh.refreshToken()));
 
     driver.assertResponseStatus(isOk());
 
