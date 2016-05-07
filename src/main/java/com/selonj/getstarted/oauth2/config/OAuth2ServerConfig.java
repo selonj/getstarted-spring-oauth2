@@ -1,10 +1,12 @@
 package com.selonj.getstarted.oauth2.config;
 
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,13 +20,16 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Created by Administrator on 2016-04-12.
  */
 @Import({OAuth2ServerConfig.ResourceServerConfig.class,
     OAuth2ServerConfig.AuthorizationServerConfig.class})
+@EnableTransactionManagement
 public class OAuth2ServerConfig {
   private static final String OAUTH2_RESOURCE = "oauth2";
   public static final String CLIENT_ID = "tonr";
@@ -67,9 +72,16 @@ public class OAuth2ServerConfig {
           allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
     }
 
+    private DataSource dataSource = DataSources.defaults();
+
     @Bean
-    public TokenStore memoryTokenStore() {
-      return new InMemoryTokenStore();
+    public TokenStore jdbcTokenStore() {
+      return new JdbcTokenStore(dataSource);
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+      return new DataSourceTransactionManager(dataSource);
     }
 
     @Override public void configure(AuthorizationServerSecurityConfigurer security)
